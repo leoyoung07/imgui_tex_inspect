@@ -296,8 +296,17 @@ bool BeginInspectorPanel(const char *title, ImTextureID texture, ImVec2 textureS
             {
                 ImVec4 color = GetTexel(&inspector->Buffer, (int)mousePosTexel.x, (int)mousePosTexel.y);
 
-                char buffer[128];
-                sprintf(buffer, "UV: (%.5f, %.5f)\nTexel: (%d, %d)", mouseUV.x, mouseUV.y, (int)mousePosTexel.x, (int)mousePosTexel.y);
+                ImU8 r = (ImU8)Round((ImClamp(color.x, 0.0f, 1.0f)) * 255);
+                ImU8 g = (ImU8)Round((ImClamp(color.y, 0.0f, 1.0f)) * 255);
+                ImU8 b = (ImU8)Round((ImClamp(color.z, 0.0f, 1.0f)) * 255);
+                ImU8 a = (ImU8)Round((ImClamp(color.w, 0.0f, 1.0f)) * 255);
+
+                int Y = 0.299 * r + 0.587 * g + 0.114 * b;
+                int U = -0.169 * r - 0.331 * g + 0.500 * b + 128;
+                int V = 0.500 * r - 0.419 * g - 0.081 * b + 128;
+
+                char buffer[256];
+                sprintf(buffer, "UV: (%.5f, %.5f)\nTexel: (%d, %d)\nYUV: (%d, %d, %d)", mouseUV.x, mouseUV.y, (int)mousePosTexel.x, (int)mousePosTexel.y, Y, U, V);
 
                 ImGui::ColorTooltip(buffer, &color.x, 0);
             }
@@ -1059,21 +1068,21 @@ ValueText::ValueText(Format format)
     switch (format)
     {
     case Format::HexString:
-        TextFormatString = "#%02X%02X%02X%02X";
-        TextColumnCount = 9;
-        TextRowCount = 1;
+        TextFormatString = "#%02X%02X%02X%02X\nYUV:(%02X,%02X,%02X)";
+        TextColumnCount = 14;
+        TextRowCount = 2;
         FormatAsFloats = false;
         break;
     case Format::BytesHex:
-        TextFormatString = "R:#%02X\nG:#%02X\nB:#%02X\nA:#%02X";
-        TextColumnCount = 5;
-        TextRowCount = 4;
+        TextFormatString = "R:#%02X\nG:#%02X\nB:#%02X\nA:#%02X\nYUV:(%02X,%02X,%02X)";
+        TextColumnCount = 14;
+        TextRowCount = 5;
         FormatAsFloats = false;
         break;
     case Format::BytesDec:
-        TextFormatString = "R:%3d\nG:%3d\nB:%3d\nA:%3d";
-        TextColumnCount = 5;
-        TextRowCount = 4;
+        TextFormatString = "R:%3d\nG:%3d\nB:%3d\nA:%3d\nYUV:(%3d,%3d,%3d)";
+        TextColumnCount = 17;
+        TextRowCount = 5;
         FormatAsFloats = false;
         break;
     case Format::Floats:
@@ -1120,7 +1129,12 @@ void ValueText::DrawAnnotation(ImDrawList *drawList, ImVec2 texel, Transform2D t
         ImU8 g = (ImU8)Round((ImClamp(value.y, 0.0f, 1.0f)) * 255);
         ImU8 b = (ImU8)Round((ImClamp(value.z, 0.0f, 1.0f)) * 255);
         ImU8 a = (ImU8)Round((ImClamp(value.w, 0.0f, 1.0f)) * 255);
-        sprintf(buffer, TextFormatString, r, g, b, a);
+
+        int Y = 0.299 * r + 0.587 * g + 0.114 * b;
+        int U = -0.169 * r - 0.331 * g + 0.500 * b + 128;
+        int V = 0.500 * r - 0.419 * g - 0.081 * b + 128;
+
+        sprintf(buffer, TextFormatString, r, g, b, a, Y, U, V);
     }
 
     // Add text to drawlist!
