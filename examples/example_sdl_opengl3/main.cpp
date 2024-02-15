@@ -1,6 +1,6 @@
 //==========================================================================
-// The ImGuiTexInspect version of this file is very based on the 
-// ImGui version. All changes have been labelled with TEX_INSPECT_CHANGE 
+// The ImGuiTexInspect version of this file is very based on the
+// ImGui version. All changes have been labelled with TEX_INSPECT_CHANGE
 //==========================================================================
 
 // Dear ImGui: standalone example application for SDL2 + OpenGL
@@ -10,7 +10,7 @@
 // Read online: https://github.com/ocornut/imgui/tree/master/docs
 
 #include "imgui.h"
-#include "imgui_impl_sdl.h"
+#include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_tex_inspect.h" //TEX_INSPECT_CHANGE
 #include "tex_inspect_opengl.h"  //TEX_INSPECT_CHANGE

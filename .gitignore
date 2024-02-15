@@ -18,3 +18,4 @@ examples/*/x64/*
 ## Editor files
 compile_commands.json
 *.bak
+examples/example_sdl_opengl3/example_sdl_opengl3
