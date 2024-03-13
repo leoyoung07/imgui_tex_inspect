@@ -62,6 +62,8 @@ struct Context
 
 Context *GContext = nullptr;
 
+RightClickCallback GRightClickCallback = nullptr;
+
 //-------------------------------------------------------------------------
 // [SECTION] USER FUNCTIONS
 //-------------------------------------------------------------------------
@@ -76,8 +78,9 @@ void Shutdown()
     // Nothing to do here.  But there might be in a later version. So client code should still call it!
 }
 
-Context *CreateContext()
+Context *CreateContext(RightClickCallback rightClickCallback)
 {
+    GRightClickCallback = rightClickCallback;
     GContext = IM_NEW(Context);
     SetCurrentContext(GContext);
     return GContext;
@@ -308,6 +311,13 @@ bool BeginInspectorPanel(const char *title, ImTextureID texture, ImVec2 textureS
                 char buffer[256];
                 sprintf(buffer, "UV: (%.5f, %.5f)\nTexel: (%d, %d)\nYUV: (%d, %d, %d)", mouseUV.x, mouseUV.y, (int)mousePosTexel.x, (int)mousePosTexel.y, Y, U, V);
 
+                if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+                {
+                    if (GRightClickCallback)
+                    {
+                        GRightClickCallback(mousePosTexel, mouseUV, color, nullptr);
+                    }
+                }
                 ImGui::ColorTooltip(buffer, &color.x, 0);
             }
         }
